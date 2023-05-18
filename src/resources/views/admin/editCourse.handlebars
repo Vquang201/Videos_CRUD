@@ -1,0 +1,35 @@
+<h2 class="title" style="text-align: center">Cập Nhập Khóa Học</h2>
+<div class="m-4">
+  {{!-- cái nào router GET VỚI POST hay GET VỚI PUT giống nhau thì kh cần action --}}
+  <form method="POST" action="?_method=PUT">
+      <div class="form-group m-2">
+        <label>Tên khóa học</label>
+        <input type="text" class="form-control" value="{{course.name}}" id="name" name="name" />
+      </div>
+      <div class="form-group m-2">
+        <label>Mô tả khóa học</label>
+        <input
+          type="text"
+          class="form-control"
+          value="{{course.description}}"
+          id="description"
+          name="description"
+        />
+      </div>
+      <div class="form-group m-2">
+        <label>Loại Video</label>
+        <input
+          type="text"
+          class="form-control"
+          value="{{course.videoType}}"
+          id="videoType"
+          name="videoType"
+        />
+      </div>
+      <div class="form-group m-2">
+        <label>Video Id</label>
+        <input type="text" class="form-control" value="{{course.videoId}}" id="videoId" name="videoId" />
+      </div>
+    <button type="submit" class="btn btn-primary">SAVE</button>
+  </form>
+</div>

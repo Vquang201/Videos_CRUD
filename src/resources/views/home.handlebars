@@ -1,0 +1,22 @@
+<h2 style="text-align: center; margin-top: 12px;">Home</h2>
+<div class="row" style="width: 1300px ; margin : auto ; margin-bottom: 90px;">
+  {{#each courses}}
+    <div class="card mt-3 mx-2" style="width: 18rem ; padding : 0">
+      <a href="/courses/{{this.slug}}">
+        <img
+          src={{this.image}}
+          class="card-img-top"
+          alt="course-img"
+          style=""
+        />
+      </a>
+      <div class="card-body">
+        <a href="/courses/{{this.slug}}">
+          <h5 class="card-title">{{this.name}}</h5>
+        </a>
+        <p class="card-text">{{this.description}}</p>
+        <a href="/muakhoahoc" class="btn btn-primary">Mua Khóa Học</a>
+      </div>
+    </div>
+  {{/each}}
+</div>

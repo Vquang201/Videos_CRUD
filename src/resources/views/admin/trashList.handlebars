@@ -1,0 +1,155 @@
+<form id="containerForm" method="POST" action="/admin/form-trash-checkbox-action">
+  <h1 style="text-align: center;">Danh sách các video đã xóa</h1>
+  <table class="table mt-5">
+    <thead>
+      <div>
+        <h5><a href="/admin/show-list"> <i class="m-3 fa fa-arrow-left"></i> Quay lại</a></h5>
+      </div>
+      <div class="d-flex align-items-center m-3">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="" id="checkBoxAll">
+          <label class="form-check-label mx-4" for="checkBoxAll">
+            Chọn tất cả
+          </label>
+        </div>
+        <select class="form-select mx-2" aria-label="Default select example" style="width : 240px" name="action">
+          {{!-- <option value="">Chọn Hành Động</option> --}}
+          <option value="restore">Khôi Phục</option>
+          <option value="delete">Xóa Vĩnh Viễn</option>
+        </select>
+        <button type="button"  id="btnSelectAll" class="btn btn-primary btn-sm px-3 disabled">Thực hiện</button>
+      </div>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Name</th>
+        <th scope="col">Loại Video</th>
+        <th scope="col">VideoId</th>
+        <th scope="col">Thời gian xóa</th>
+        <th scope="col">Tùy chọn</th>
+      </tr>
+    </thead>
+    {{#if courses}}
+    <tbody>
+      {{#each courses}}
+      <tr>
+        <td>
+          <div class="form-check">
+            <input class="form-check-input checkBox" type="checkbox" name="videoIds[]" value="{{this._id}}">
+          </div>
+        </td>
+        <th scope="row">{{sum @index 1}}</th>
+        <td>{{this.name}}</td>
+        <td>{{this.videoType}}</td>
+        <td>{{this.videoId}}</td>
+        <td>{{this.deletedAt}}</td>
+        <td>
+          <a class="btnRestore m-t" data-id="{{this._id}}" href="">Khôi Phục</a>
+          <a data-id="{{this._id}}" data-bs-toggle="modal" data-bs-target="#exampleModal" href="">
+            Xóa Vĩnh Viễn
+          </a>
+        </td>
+      </tr>
+      {{else}}
+      <tr>
+        <th colspan="6">
+          <h5 class="text-center">Thùng rác Trống </h5>
+        </th>
+      </tr>
+      {{/each}}
+    </tbody>
+    {{/if}}
+  </table>
+</form>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Thông Báo !!!</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Bạn chắc chắn muốn xóa vĩnh viễn không ?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy bỏ</button>
+        <button id="btn-delete" type="button" class="btn btn-primary">Xóa vĩnh
+          viễn</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{! cần action ='/admin/delete/${videoId}?_method=DELETE' vì delete router nó k trùng với ai }}
+<form id="form-delete" method="POST" action=""></form>
+<form id="form-restore" method="POST" action="?_method=PATCH"></form>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    let formDelete = document.getElementById('form-delete')
+    let formRestore = document.getElementById('form-restore')
+    let btnDelete = document.getElementById('btn-delete')
+    let btnRestore = document.querySelectorAll('.btnRestore')
+    let exampleModal = document.getElementById('exampleModal')
+    let videoId
+
+    // CheckBox show-list
+    const btnSelectAll = document.getElementById('btnSelectAll')
+    const checkBoxAll = document.getElementById('checkBoxAll')
+    const checkBox = document.getElementsByClassName('checkBox')
+    const containerForm = document.getElementById('containerForm')
+    var i = 0;
+
+    exampleModal.addEventListener('show.bs.modal', event => {
+      let button = event.relatedTarget
+      videoId = button.getAttribute('data-id')
+    })
+
+    btnDelete.onclick = (e) => {
+      formDelete.action = `/admin/trash-bin/${videoId}?_method=DELETE`
+      formDelete.submit()
+    }
+
+    btnRestore.forEach((restoreBtn) => {
+      restoreBtn.addEventListener('click', (e) => {
+        e.preventDefault()
+        let id = restoreBtn.getAttribute('data-id')
+        formRestore.action = '/admin/restore/' + id + '?_method=PATCH'
+        formRestore.submit()
+      })
+    })
+
+
+    //Select all checkboxes on click
+    checkBoxAll.onchange = function () {
+      var isCheckedAll = this.checked
+      for (var checkbox of checkBox) {
+        checkbox.checked = isCheckedAll
+        isCheckedAll ? i = checkBox.length : i = 0
+        deleteDisabled(i)
+      }
+    }
+
+    //Select the checkboxes in turn
+    for (var checkbox of checkBox) {
+      checkbox.onchange = function () {
+        var isCheckedAll = this.checked
+        isCheckedAll ? i++ : i--
+        isCheckedAll = i === checkBox.length
+        checkBoxAll.checked = isCheckedAll
+        deleteDisabled(i)
+      }
+    }
+
+    btnSelectAll.onclick = (e) => {
+      containerForm.submit()
+    }
+
+    // Add or remove disabled
+    function deleteDisabled(i) {
+      i > 0 ? btnSelectAll.classList.remove('disabled') : btnSelectAll.classList.add('disabled')
+    }
+
+  })
+</script>
